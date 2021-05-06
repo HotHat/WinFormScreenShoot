@@ -8,7 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
+using System.Diagnostics;
 
 namespace WinFormScreenShoot
 {
@@ -31,7 +34,10 @@ namespace WinFormScreenShoot
             this.WindowState = FormWindowState.Maximized;
             this.Location = new System.Drawing.Point(0, 0);
             MouseDown += this.Form2_MouseClick;
-            
+            MouseMove += this.CaptureWindow_MouseMove;
+            MouseUp += this.Form2_MouseUp;
+
+
         }
 
 
@@ -45,16 +51,44 @@ namespace WinFormScreenShoot
             isMouseDown = true;
             x = e.X;
             y = e.Y;
+
+            Debug.WriteLine("Mouse Click!");
+            Debug.WriteLine("Start At %ld %ld", x, y);
         }
 
-        private void CaptureWindow_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private void Form2_MouseUp(object sender, MouseEventArgs e)
+        {
+            width = Math.Abs(e.X - x);
+            height = Math.Abs(e.Y - y);
+
+            if (e.X > x)
+            {
+                CaptureScreen(x, y, width, height);
+            }
+            else
+            {
+                CaptureScreen(e.X, e.Y, width, height);
+            }
+
+
+            isMouseDown = false;
+            x = 0.0;
+            y = 0.0;
+            this.Close();
+        }
+
+        private void CaptureWindow_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMouseDown)
             {
+                Debug.WriteLine("Mouse Move!");
                 // 1. 通过一个矩形来表示目前截图区域
-                System.Drawing.Imaging.Rectangle rect = new System.Drawing.Rectangle();
-                double dx = e.GetPosition(null).X;
-                double dy = e.GetPosition(null).Y;
+                System.Windows.Shapes.Rectangle rect = new System.Windows.Shapes.Rectangle();
+                double dx = e.X;
+                double dy = e.Y;
+
+                Debug.WriteLine("Move At %ld %ld", dx, dy);
+
                 double rectWidth = Math.Abs(dx - x);
                 double rectHeight = Math.Abs(dy - y);
                 SolidColorBrush brush = new SolidColorBrush(Colors.White);
@@ -65,40 +99,19 @@ namespace WinFormScreenShoot
                 rect.StrokeThickness = 1;
                 if (dx < x)
                 {
-                    Canvas.SetLeft(rect, dx);
-                    Canvas.SetTop(rect, dy);
+                    // Canvas.SetLeft(rect, dx);
+                    // Canvas.SetTop(rect, dy);
                 }
                 else
                 {
-                    Canvas.SetLeft(rect, x);
-                    Canvas.SetTop(rect, y);
+                   // Canvas.SetLeft(rect, x);
+                   // Canvas.SetTop(rect, y);
                 }
 
-                CaptureCanvas.Children.Clear();
-                CaptureCanvas.Children.Add(rect);
+                // CaptureCanvas.Children.Clear();
+                // CaptureCanvas.Children.Add(rect);
 
-                if (e.LeftButton == MouseButtonState.Released)
-                {
-                    CaptureCanvas.Children.Clear();
-                    // 2. 获得当前截图区域
-                    width = Math.Abs(e.GetPosition(null).X - x);
-                    height = Math.Abs(e.GetPosition(null).Y - y);
-
-                    if (e.GetPosition(null).X > x)
-                    {
-                        CaptureScreen(x, y, width, height);
-                    }
-                    else
-                    {
-                        CaptureScreen(e.GetPosition(null).X, e.GetPosition(null).Y, width, height);
-                    }
-
-
-                    isMouseDown = false;
-                    x = 0.0;
-                    y = 0.0;
-                    this.Close();
-                }
+             
             }
         }
 
