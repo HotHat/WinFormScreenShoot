@@ -27,19 +27,20 @@ namespace WinFormScreenShoot
         private Graphics paint;
         private Graphics finalPaint;
         private Bitmap bitmap;
+        private System.Drawing.Pen pen;
 
         public Form2()
         {
 
             InitializeComponent();
 
-            //this.FormBorderStyle = FormBorderStyle.None;
-            //this.WindowState = FormWindowState.Maximized;
-            //this.Location = new System.Drawing.Point(0, 0);
-            //this.panel_paint.Size = this.Size;
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.WindowState = FormWindowState.Maximized;
+            this.Location = new System.Drawing.Point(0, 0);
+            // this.panel_paint.Size = this.Size;
             // Paint += this.Form2_Paint;
             
-            brush = new SolidBrush(System.Drawing.Color.FromArgb(100, 255, 0, 0));
+            brush = new SolidBrush(System.Drawing.Color.FromArgb(10, 0, 0, 0));
             paint = panel_paint.CreateGraphics();
 
             SetStyle(ControlStyles.UserPaint, true);
@@ -49,6 +50,8 @@ namespace WinFormScreenShoot
             bitmap = new Bitmap(this.Width, this.Height);
             paint = Graphics.FromImage(bitmap);
             finalPaint = panel_paint.CreateGraphics();
+
+            pen = new System.Drawing.Pen(System.Drawing.Color.Blue);
 
         }
 
@@ -107,15 +110,16 @@ namespace WinFormScreenShoot
         }
 
         private void Form2_MouseUp(object sender, MouseEventArgs e)
-        {
+        { 
+            ClearBackgroup();
 
             if (e.X > x)
             {
-                // CaptureScreen(x, y, width, height);
+                CaptureScreen(x, y, this.rect.Width, this.rect.Height);
             }
             else
             {
-                // CaptureScreen(e.X, e.Y, width, height);
+                CaptureScreen(e.X, e.Y, this.rect.Width, this.rect.Height);
             }
 
 
@@ -123,8 +127,20 @@ namespace WinFormScreenShoot
             x = 0.0;
             y = 0.0;
             // this.Close();
-            this.paint.Clear(Form2.ActiveForm.BackColor);
+           
             //this.Invalidate(new Region(new Rectangle((int)x, (int)y, (int)rect.Width, (int)rect.Height)));
+        }
+
+        private void ClearBackgroup()
+        {
+            this.paint.Clear(System.Drawing.Color.FromArgb(100, 0, 0, 0));
+        }
+
+        private void DrawRect()
+        {
+            paint.DrawRectangle(this.pen, this.rect);
+            
+            finalPaint.DrawImage(this.bitmap, 0, 0);
         }
 
         private void Form2_MouseMove(object sender, MouseEventArgs e)
@@ -171,9 +187,8 @@ namespace WinFormScreenShoot
                     //this.Invalidate(new Region(new Rectangle((int)x, (int)y, (int)rect.Width, (int)rect.Height)));
                 }
 
-                this.paint.Clear(Form2.ActiveForm.BackColor);
-                paint.FillRectangle(this.brush, this.rect);
-                finalPaint.DrawImage(this.bitmap, 0, 0);
+                ClearBackgroup();
+                DrawRect();
 
                 // CaptureCanvas.Children.Clear();
                 // CaptureCanvas.Children.Add(rect);
