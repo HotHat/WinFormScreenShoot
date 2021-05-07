@@ -12,13 +12,13 @@ using System.Drawing.Imaging;
 
 namespace WinFormScreenShoot
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ContextMenu contextMenu1;
         private System.Windows.Forms.MenuItem menuItem1, menuItem2;
 
-        public Form1()
+        public MainForm()
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenu1 = new System.Windows.Forms.ContextMenu();

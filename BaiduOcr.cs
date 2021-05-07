@@ -68,7 +68,11 @@ namespace WinFormScreenShoot
             // 带参数调用通用文字识别, 图片参数为本地图片
             var result = client.GeneralBasic(image, options);
             // Console.WriteLine(result);
+
+            if (result == null) { return ""; }
+
             String trans = "";
+
             foreach(var words in result.GetValue("words_result"))
             {
                 // Console.WriteLine(words);

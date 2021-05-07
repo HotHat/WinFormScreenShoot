@@ -34,24 +34,8 @@ namespace WinFormScreenShoot
 
             InitializeComponent();
 
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.WindowState = FormWindowState.Maximized;
-            this.Location = new System.Drawing.Point(0, 0);
-            // this.panel_paint.Size = this.Size;
-            // Paint += this.Form2_Paint;
-            
-            brush = new SolidBrush(System.Drawing.Color.FromArgb(10, 0, 0, 0));
-            paint = panel_paint.CreateGraphics();
-
-            SetStyle(ControlStyles.UserPaint, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true); // 禁止擦除背景.
-            SetStyle(ControlStyles.DoubleBuffer, true); // 双缓冲
-
-            bitmap = new Bitmap(this.Width, this.Height);
-            paint = Graphics.FromImage(bitmap);
-            finalPaint = panel_paint.CreateGraphics();
-
-            pen = new System.Drawing.Pen(System.Drawing.Color.Blue);
+            var s = new BaiduTranslate();
+            s.translate();
 
         }
 
