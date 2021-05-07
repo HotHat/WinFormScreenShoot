@@ -10,10 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 
 namespace WinFormScreenShoot
 {
-    public partial class Form3 : Form
+    public partial class RegionCaptureForm : Form
     {
 
         private TextureBrush m_backgroundBrush;
@@ -28,7 +29,7 @@ namespace WinFormScreenShoot
         public Bitmap Canvas { get; private set; }
         public Rectangle CanvasRectangle { get; internal set; }
 
-        public Form3()
+        public RegionCaptureForm()
         {
             InitializeComponent();
 
@@ -110,9 +111,17 @@ namespace WinFormScreenShoot
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
             m_isMouseDown = false;
-            
+
+
             // this.Close();
             this.Invalidate();
+            if (m_rect.Width <= 0 || m_rect.Height <= 0) { return; }
+
+            var bmp = m_canvas.Clone(m_rect, m_canvas.PixelFormat);
+            //bmp.Save("D:\\555.png", ImageFormat.Png);
+            Debug.WriteLine("Send image");
+            BaiduOcr.GetInstance().send(CaptureHelpers.Bitmap2Byte(bmp));
+
             //this.Invalidate(new Region(new Rectangle((int)x, (int)y, (int)rect.Width, (int)rect.Height)));
         }
 

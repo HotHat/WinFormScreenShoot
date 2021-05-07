@@ -1,6 +1,6 @@
 ﻿namespace WinFormScreenShoot
 {
-    partial class Form3
+    partial class RegionCaptureForm
     {
         /// <summary>
         /// Required designer variable.
