@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace WinFormScreenShoot
 {
@@ -18,6 +19,10 @@ namespace WinFormScreenShoot
         private TextureBrush m_backgroundBrush;
         private Bitmap m_canvas;
         private Pen m_borderDotStaticPen;
+
+        private Point m_startPoint, m_endPoint;
+        private bool m_isMouseDown = false;
+        private Rectangle m_rect;
 
         public Rectangle ClientArea { get; private set; }
         public Bitmap Canvas { get; private set; }
@@ -43,6 +48,10 @@ namespace WinFormScreenShoot
             CanvasRectangle = ClientArea;
 
             InitBackground(FullScreenCapture());
+
+            MouseDown += this.OnMouseDown;
+            MouseMove += this.OnMouseMove;
+            MouseUp += this.OnMouseUp;
         }
 
 
@@ -58,10 +67,54 @@ namespace WinFormScreenShoot
             g.CompositingMode = CompositingMode.SourceOver;
 
             // Draw(g);
+            var Buttons = Control.MouseButtons;
+            var Position = Control.MousePosition;
 
-        
+            Debug.WriteLine("Buttons: {0}", Buttons);
+            Debug.WriteLine("Position: {0}", Position);
+
+            // Invalidate();
+            if (m_isMouseDown)
+            {
+                g.DrawRectangle(m_borderDotStaticPen, m_rect);
+            }
         }
 
+        private void OnMouseDown(object sender, MouseEventArgs e)
+        {
+            m_isMouseDown = true;
+            m_startPoint.X = e.X;
+            m_startPoint.Y = e.Y;
+
+            Debug.WriteLine("Mouse Click!");
+            Debug.WriteLine("Start At {0}", m_startPoint);
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+
+            var with = Math.Abs(e.X - m_startPoint.X);
+            var heigh = Math.Abs(e.Y - m_startPoint.Y);
+            int x, y;
+
+            x = m_startPoint.X < e.X ? m_startPoint.X : e.X;
+            y = m_startPoint.Y < e.Y ? m_startPoint.Y : e.Y;
+
+            m_rect.X = x;
+            m_rect.Y = y;
+            m_rect.Size = new Size(with, heigh);
+
+            this.Invalidate();
+        }
+
+        private void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            m_isMouseDown = false;
+            
+            // this.Close();
+            this.Invalidate();
+            //this.Invalidate(new Region(new Rectangle((int)x, (int)y, (int)rect.Width, (int)rect.Height)));
+        }
 
         internal void InitBackground(Bitmap canvas)
         {
