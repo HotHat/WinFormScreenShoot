@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,34 +14,101 @@ namespace WinFormScreenShoot
 {
     public partial class Form3 : Form
     {
-        // 设置APPID/AK/SK
-        String APP_ID = "24118900";
-        String API_KEY = "u0c5ubTKkBlrVpAYg43SFg1v";
-        String SECRET_KEY = "z2aTOhu9jG0LiFKojOFyy5ydE0tgh08a";
 
-        Baidu.Aip.Ocr.Ocr client;
+        private TextureBrush m_backgroundBrush;
+        private Bitmap m_canvas;
+        private Pen m_borderDotStaticPen;
+
+        public Rectangle ClientArea { get; private set; }
+        public Bitmap Canvas { get; private set; }
+        public Rectangle CanvasRectangle { get; internal set; }
 
         public Form3()
         {
             InitializeComponent();
-            client = new Baidu.Aip.Ocr.Ocr(API_KEY, SECRET_KEY);
-            client.Timeout = 60000;  // 修改超时时间
 
-            var image = File.ReadAllBytes("d://222.png");
-            // 调用通用文字识别, 图片参数为本地图片，可能会抛出网络等异常，请使用try/catch捕获
-            var result = client.GeneralBasic(image);
-            Console.WriteLine(result);
-            // 如果有可选参数
-            var options = new Dictionary<string, object>{
-                {"language_type", "ENG"},
-                {"detect_direction", "true"},
-                {"detect_language", "false"},
-                {"probability", "true"}
-            };
-            // 带参数调用通用文字识别, 图片参数为本地图片
-            result = client.GeneralBasic(image, options);
-            Console.WriteLine(result);
+            AutoScaleMode = AutoScaleMode.None;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
+            StartPosition = FormStartPosition.Manual;
+            FormBorderStyle = FormBorderStyle.None;
+            Bounds = CaptureHelpers.GetScreenBounds();
+            ShowInTaskbar = false;
 
+
+
+
+            m_borderDotStaticPen = new Pen(Color.White) { DashPattern = new float[] { 5, 5 } };
+
+            ClientArea = CaptureHelpers.GetScreenBounds0Based();
+            CanvasRectangle = ClientArea;
+
+            InitBackground(FullScreenCapture());
+        }
+
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Update();
+
+            Graphics g = e.Graphics;
+
+
+            g.CompositingMode = CompositingMode.SourceCopy;
+            g.FillRectangle(m_backgroundBrush, CanvasRectangle);
+            g.CompositingMode = CompositingMode.SourceOver;
+
+            // Draw(g);
+
+        
+        }
+
+
+        internal void InitBackground(Bitmap canvas)
+        {
+            m_canvas = canvas;
+
+            m_backgroundBrush = new TextureBrush(m_canvas) { WrapMode = WrapMode.Clamp };
+     
+        }
+
+
+        private Bitmap FullScreenCapture()
+        {
+            var rect = CaptureHelpers.GetScreenBounds();
+
+            IntPtr handle = NativeMethods.GetDesktopWindow();
+
+            var bmp = CaptureRectangleNative(handle, rect);
+
+            return bmp;
+            // bmp.Save("D://55.png", System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+
+        
+
+
+        private Bitmap CaptureRectangleNative(IntPtr handle, Rectangle rect)
+        {
+            if (rect.Width == 0 || rect.Height == 0)
+            {
+                return null;
+            }
+
+            IntPtr hdcSrc = NativeMethods.GetWindowDC(handle);
+            IntPtr hdcDest = NativeMethods.CreateCompatibleDC(hdcSrc);
+            IntPtr hBitmap = NativeMethods.CreateCompatibleBitmap(hdcSrc, rect.Width, rect.Height);
+            IntPtr hOld = NativeMethods.SelectObject(hdcDest, hBitmap);
+            NativeMethods.BitBlt(hdcDest, 0, 0, rect.Width, rect.Height, hdcSrc, rect.X, rect.Y, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
+
+
+            NativeMethods.SelectObject(hdcDest, hOld);
+            NativeMethods.DeleteDC(hdcDest);
+            NativeMethods.ReleaseDC(handle, hdcSrc);
+            Bitmap bmp = Image.FromHbitmap(hBitmap);
+            NativeMethods.DeleteObject(hBitmap);
+
+            return bmp;
         }
     }
 }
