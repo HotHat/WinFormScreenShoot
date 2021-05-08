@@ -34,9 +34,13 @@ namespace WinFormScreenShoot
 
             InitializeComponent();
 
-            var s = new BaiduTranslate();
-            s.translate();
+            //var s = new BaiduTranslate();
+            //var r = s.translate("Welcome to C# world!");
+            //Console.WriteLine(r);
 
+            // MessageBox.Show(this, "显示内容1", "显示内容2");
+            
+            
         }
 
         //protected override void OnPaint(PaintEventArgs e)
@@ -212,6 +216,12 @@ namespace WinFormScreenShoot
             //bitmap.Height = control.Height;
             bitmap = new Bitmap(control.Width, control.Height);
             paint = Graphics.FromImage(bitmap);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var form = new TranslateResultForm("原文内容显示", "这里是译文显示");
+            form.ShowDialog();
         }
     }
 }

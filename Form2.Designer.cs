@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.panel_paint = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.panel_paint.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel_paint
@@ -38,6 +40,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel_paint.AutoSize = true;
             this.panel_paint.BackColor = System.Drawing.SystemColors.Desktop;
+            this.panel_paint.Controls.Add(this.button1);
             this.panel_paint.Location = new System.Drawing.Point(0, 0);
             this.panel_paint.Name = "panel_paint";
             this.panel_paint.Size = new System.Drawing.Size(974, 575);
@@ -45,6 +48,16 @@
             this.panel_paint.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseDown);
             this.panel_paint.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseMove);
             this.panel_paint.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseUp);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(551, 227);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form2
             // 
@@ -59,6 +72,7 @@
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseUp);
             this.Resize += new System.EventHandler(this.Form2_Resize);
+            this.panel_paint.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -67,5 +81,6 @@
         #endregion
 
         private System.Windows.Forms.Panel panel_paint;
+        private System.Windows.Forms.Button button1;
     }
 }

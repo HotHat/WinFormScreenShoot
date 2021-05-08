@@ -43,7 +43,7 @@ namespace WinFormScreenShoot
 
 
 
-            m_borderDotStaticPen = new Pen(Color.White) { DashPattern = new float[] { 5, 5 } };
+            m_borderDotStaticPen = new Pen(Color.Red, 3) { DashPattern = new float[] { 2, 2 } };
 
             ClientArea = CaptureHelpers.GetScreenBounds0Based();
             CanvasRectangle = ClientArea;
@@ -120,8 +120,28 @@ namespace WinFormScreenShoot
             var bmp = m_canvas.Clone(m_rect, m_canvas.PixelFormat);
             //bmp.Save("D:\\555.png", ImageFormat.Png);
             Debug.WriteLine("Send image");
-            BaiduOcr.GetInstance().send(CaptureHelpers.Bitmap2Byte(bmp));
+            String ocrStr = "";
+            try
+            {
+                ocrStr =  BaiduOcr.GetInstance().send(CaptureHelpers.Bitmap2Byte(bmp));
 
+                if ("" == ocrStr)
+                {
+                    throw new Exception("返回结果为空");
+                }
+            } catch (Exception exp)
+            {
+                MessageBox.Show("OCR解析出错误: " + exp.Message);
+            }
+
+            var result = new BaiduTranslate().translate(ocrStr);
+            Console.Write("解析结果: ");
+            Console.WriteLine(result);
+            
+            var form = new TranslateResultForm(result.src, result.dst);
+            form.ShowDialog();
+
+            this.Close();
             //this.Invalidate(new Region(new Rectangle((int)x, (int)y, (int)rect.Width, (int)rect.Height)));
         }
 
